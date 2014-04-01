@@ -1,10 +1,10 @@
 <?php
 defined( '_JEXEC' ) or die( 'Restricted access' );
 /**
- * Enquire Controller for Enquiry module 
+ * Enquire Controller for Enquiry module
  * This class acts as the main controller of Customer enquiry module. 
- * The controller check data and sends response to clients who enquire about products and services
- *
+ * The controller check data and sends response to clients who enquire about products and services.
+ * This class coding style follows both php coding and Joomla coding standards.
  * @author     George Huynh
  * @copyright  2010 
  * @license    PHP License 3.01
@@ -13,14 +13,14 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
  class EnquireControllerIndex extends EnquireController {
      /**
 	 * 
-	 * @var DwtModelSkilloutcome
+	 * @var DwtModelSkillSet
 	 */
-	var $skillOutcome;
+	var $skillset;
 	/**
 	 * 
-	 * @var DwtModelSoftwaregrouip
+	 * @var DwtModelSkillgroup
 	 */
-	var $softwareGroup;
+	var $skillGroup;
     
 	/**
      * @name _send
@@ -59,7 +59,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		
 	/**
      * @name _load
-	 * @description Check the inquiries table to see if there is duplicate record exist
+	 * @description Check the inquiries table to see if there is any duplicate record exists
 	 * @param array $data  the array of user details
      * @param int    $cid  an integer of client id.
      * @param int    $pid  an integer of pakage id.
@@ -85,6 +85,137 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		else
 			return false;
 	}
-
 	
+	/**
+     * @name hasPresetItem
+	 * @description Check if the course has been preset. 
+     * @param int    $cid  an integer of client id.
+     * @param int    $pid  an integer of pakage id.
+     * @return 
+	 *       0 if the client or package exists, 
+	 *  	-1 if client is preset, -2 if client and package not exists,
+	 *      -3 if both client and packge exist.
+     * @throws none
+     * @access public
+     */
+	 
+	function hasPresetItems($cid, $pid){
+		if (empty($cid) && empty($pid)) {
+			return -2;
+		} 
+                                
+        $hasClient = $hasPackage = false;
+		
+		$clientModel = JModel::getInstance('Client', 'DwtModel');
+		if ($clientModel->hasAny('ID='.$cid.' AND active=\'1\'')) {
+			$hasClient = true;
+		}
+
+		$packageModel = JModel::getInstance('Package', 'DwtModel');
+
+		if ($packageModel->hasAny('ID='.$pid.' AND active=\'1\'')
+			&& $clientModel->getClientByPackage($pid) !== false	) {
+				$hasPackage = true;
+		}
+
+		if ($hasClient && $hasPackage) {
+			return -3;
+		}
+		if ($hasClient || $hasPackage) {
+			return 0;
+		}
+		
+		return -1;
+	}
+
+	/**
+     * @name jssave
+	 * @description Save enquiry details. 
+	 * @param none
+     * @return none
+     * @throws none
+     * @access public
+     */
+	function jssave(){
+		if (!JRequest::checkToken()) {
+			$this->_renderJSON('ACCESS DENIED');
+		}
+
+		$result = 'OK';
+		// Get parameters 
+		$data = JRequest::getVar('enquire', array());
+
+		$cs = empty($data['cs']) ? 0: $data['cs'];
+		$pid = empty($data['pid']) ? 0: $data['pid'];
+
+		//Check details' validation
+		require_once(JPATH_COMPONENT . DS . 'validators' .DS .'enquire.php');
+		$v = new EnquireValidator();
+		$error = array();
+		
+		if (!$v->validates($data)) {
+			$error = $v->validationErrors;
+		}
+		
+		if (empty($data['location'])) {
+			$error['location'] = 'Please select the city in which you want to do the course';
+		}
+			
+		if ($this->hasPresetClient($cs, $pid) < -2) {
+			$error['cs'] = 'Specify either a Client or Package, not both, so that we can identify your enquiry correctly.';
+			$error['pid'] = '';
+		}
+		elseif ($this->hasPresetClient($cs, $pid) < 0) {
+			$error['pid'] = 'Please select a course or a package';
+		}
+		// Check duplicated inquiry
+		if ($this->_load($data, $cs, $pid)) {
+			$error[] = 'Duplicate request detected. Your enquiry has been already received';
+		}
+			
+		if (empty($error)) {
+			$r = $this->_save($data, $cs, $pid);
+			if (!$r) {
+				$result = "Failed to send this enquiry.";
+			}
+			else{
+				$m = JModuleHelper::getModule('omniture');
+				$text = '';
+				if (!empty($m)) {
+					jimport('mvc_ext.viewhelper');
+					require_once(JPATH_ROOT . DS . 'modules' . DS . 'mod_omniture' . DS. 'helper.php');
+					$omn_obj = modOmnitureHelper::getTags($m->params);
+					$text = ViewHelper::php2js($omn_obj);
+				}
+				if (!empty($text)) {
+					$result .= $text;
+				}
+			}
+		}
+		else{
+			if (is_array($result)) {
+				$result = array_merge($result, $error);
+			}
+			else
+				$result = $error;
+		}
+
+		$this->_renderJSON($result);
+	}
+	/**
+     * @name _renderJSON
+	 * @description Display details. 
+	 * @param array $data - the array of user details
+     * @return none
+     * @throws none
+     * @access public
+     */
+	function _renderJSON($data) {
+		jimport('mvc_ext.viewhelper');
+		$mime_type = "application/x-javascript";
+		header("Content-type: ".$mime_type);
+		echo viewHelper::php2js(array('_RESULT'=>$data));
+		die;
+	}
+        
 }
