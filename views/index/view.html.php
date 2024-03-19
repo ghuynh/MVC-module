@@ -7,7 +7,7 @@ jimport('mvc_ext.formhelper');
  *
  * @author     George Huynh
  * @copyright  2010 
- * @license    PHP License 3.01
+ * @license    Qt License 
  * @version    Release: 1.5.2
  */
 class EnquireViewIndex extends EnquireView {
