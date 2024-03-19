@@ -7,18 +7,26 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
  * This class coding style follows both php coding and Joomla coding standards.
  * @author     George Huynh
  * @copyright  2010 
- * @license    PHP License 3.01
+ * @license    Copyright 2024 by Van (George) H Huynh
+
+Permission is hereby granted to any person obtaining a copy of this software and associated documentation files (the "Software") to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The Qt Commercial License enables businesses to utilize the Qt framework in their proprietary software projects while retaining full control over their source code and intellectual property.
+
+Under the Qt Commercial License, developers and businesses are required to obtain a license and pay a fee for the use of the Qt framework in commercial applications. Please contact me at gwkhuynh@gmail.com to obtain a license in advance before using this software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @version    Release: 1.5.2
  */
  class EnquireControllerIndex extends EnquireController {
      /**
 	 * 
-	 * @var DwtModelSkillSet
+	 * @var 
 	 */
 	var $skillset;
 	/**
 	 * 
-	 * @var DwtModelSkillgroup
+	 * @var 
 	 */
 	var $skillGroup;
     
