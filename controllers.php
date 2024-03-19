@@ -76,7 +76,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
      * @access public
      */
 	function _load($data, $cid, $pid) {
-		$inquiryModel = JModel::getInstance('Inquiry', 'DwtModel');
+		$inquiryModel = JModel::getInstance('Inquiry', 'DataModel');
 
 		// check the table for duplicate records if identical record is going to be used within 20 seconds
 		$timeLimit = 0; 
@@ -114,12 +114,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                                 
         $hasClient = $hasPackage = false;
 		
-		$clientModel = JModel::getInstance('Client', 'DwtModel');
+		$clientModel = JModel::getInstance('Client', 'DataModel');
 		if ($clientModel->hasAny('ID='.$cid.' AND active=\'1\'')) {
 			$hasClient = true;
 		}
 
-		$packageModel = JModel::getInstance('Package', 'DwtModel');
+		$packageModel = JModel::getInstance('Package', 'DataModel');
 
 		if ($packageModel->hasAny('ID='.$pid.' AND active=\'1\'')
 			&& $clientModel->getClientByPackage($pid) !== false	) {
