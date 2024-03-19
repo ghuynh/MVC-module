@@ -1,2 +1,2 @@
-GeorgeCodeSample
+MVC design patter
 ================
