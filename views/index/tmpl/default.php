@@ -67,5 +67,5 @@
 </form>
 </div>
 <script type="text/javascript">
-$("div.coursedetail").addClass('standalone');
+$("div.itemdetail").addClass('standalone');
 </script>
